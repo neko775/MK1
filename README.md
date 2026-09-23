@@ -269,7 +269,7 @@ Capacitorの `DeviceRpa` プラグイン利用可能状態を確認し、Android
 
 ## バックエンドAPI
 
-Expressサーバーの実装は [`server.ts`](server.ts) です。APIベースURLは `VITE_API_BASE_URL` で変更でき、未設定時は同一オリジンの相対 `/api` を使用します。
+Expressサーバーの実装は [`server.ts`](server.ts) です。APIベースURLは `VITE_API_BASE_URL` で変更でき、未設定時は同一オリジンの相対 `/api` を使用します。ダウンロードしたHTMLを直接開く場合は、URL末尾に `?api=https://公開API.example.com` を付けるか、HTMLの `window.__MYENGINE_API_BASE_URL__` を設定してください。Capacitorのローカル開発時は未設定なら `http://localhost:3000` を使用します。
 
 ### エンドポイント
 

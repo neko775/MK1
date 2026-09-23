@@ -7,10 +7,12 @@ function getRuntimeApiBaseUrl(): string {
   const runtimeUrl = window.__MYENGINE_API_BASE_URL__?.trim();
   if (runtimeUrl) return runtimeUrl;
 
+  const queryUrl = new URLSearchParams(window.location.search).get('api');
+  if (queryUrl?.trim()) return queryUrl.trim();
+
   const isNative = window.Capacitor?.isNativePlatform?.() === true;
-  if ((isNative || window.location.protocol === 'file:') && !configuredApiBaseUrl) {
-    return 'http://localhost:3000';
-  }
+  const isLocalFile = window.location.protocol === 'file:';
+  if (isNative || isLocalFile) return 'http://localhost:3000';
 
   return '';
 }
