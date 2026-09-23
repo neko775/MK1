@@ -1,23 +1,15 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
-</div>
+# MK1 Engine
 
-# Run and deploy your AI Studio app
-
-This contains everything you need to run your app locally.
-
-View your app in AI Studio: https://ai.studio/apps/19303196-2a2f-4326-b03a-fa2d0dc3f9b2
+Gemini API と連携する検索コックピット。Web アプリと Capacitor Android アプリを同じコードベースからビルドできます。
 
 ## Run Locally
 
 **Prerequisites:**  Node.js
 
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+1. Install dependencies: `npm install`
+2. Set `GEMINI_API_KEY` in `.env.local`.
+3. Start the app: `npm run dev`
 
 For a deployed web app, set `APP_URL` and `VITE_API_BASE_URL` to the public HTTPS
 origin that serves the Express API before building. The browser uses relative
@@ -58,9 +50,11 @@ into the client.
 
 An installed APK cannot update its bundled code just because a developer edits a file. APK updates require rebuilding and distributing a new APK, or adding a dedicated Capacitor OTA update service. The automatic update behavior applies to the web and PWA versions.
 
-### GitHub cloud APK build
+### GitHub cloud builds
 
-The workflow at `.github/workflows/build-apk.yml` builds a debug APK automatically on pushes to `main`/`master`, or manually from the GitHub Actions tab. For a manual run, enter the public HTTPS API URL in the `api_base_url` field. Alternatively, configure the repository variable `VITE_API_BASE_URL`. After the workflow completes, download `mk1-search-engine-debug-apk` from the workflow run's Artifacts section.
+GitHub Actions は `main` または `master` への push と pull request で Web ビルドを実行します。成功すると `mk1-engine-web` artifact として `dist/` をダウンロードできます。設定は [`.github/workflows/ci.yml`](.github/workflows/ci.yml) にあります。
+
+The workflow at [`.github/workflows/build-apk.yml`](.github/workflows/build-apk.yml) builds a debug APK automatically on pushes to `main`/`master`, or manually from the GitHub Actions tab. For a manual run, enter the public HTTPS API URL in the `api_base_url` field. Alternatively, configure the repository variable `VITE_API_BASE_URL`. After the workflow completes, download `mk1-engine-debug-apk` from the workflow run's Artifacts section.
 
 The Android build must be performed by GitHub Actions. Do not run the Gradle
 build locally. The workflow installs its own Node.js, JDK, and Android SDK.
