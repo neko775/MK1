@@ -62,7 +62,7 @@ jobs:
         run: ./gradlew assembleDebug --no-daemon
 
       - name: Upload APK artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: mk1-engine-debug-apk
           path: android/app/build/outputs/apk/debug/app-debug.apk
@@ -70,7 +70,7 @@ jobs:
           retention-days: 14
 
       - name: Upload web build artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: mk1-engine-web
           path: dist
@@ -81,7 +81,7 @@ jobs:
         run: tar -czf mk1-engine-web.tar.gz -C dist .
 
       - name: Upload packaged web build
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: mk1-engine-web-package
           path: mk1-engine-web.tar.gz
