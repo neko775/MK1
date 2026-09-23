@@ -14,6 +14,9 @@ function getRuntimeApiBaseUrl(): string {
   const isLocalFile = window.location.protocol === 'file:';
   if (isNative || isLocalFile) return 'http://localhost:3000';
 
+  const isRemoteWeb = window.location.protocol.startsWith('http');
+  if (isRemoteWeb) return window.location.origin;
+
   return '';
 }
 

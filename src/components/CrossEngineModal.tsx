@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Compass, ExternalLink, X, Search, BookmarkPlus, Sparkles, Languages, Globe2 } from 'lucide-react';
 import { EngineResult } from '../types';
-import { apiUrl } from '../lib/api';
+import { apiUrl, generateGeminiFallback, getStoredGeminiApiKey } from '../lib/api';
 
 interface CrossEngineModalProps {
   isOpen: boolean;
@@ -201,7 +201,21 @@ export const CrossEngineModal: React.FC<CrossEngineModalProps> = ({
       const data = await response.json();
       setAiSummary(data.reply || 'AI整理結果を取得できませんでした。');
     } catch {
-      setAiSummary('AI整理にはGemini APIキーとサーバー接続が必要です。');
+      const apiKey = getStoredGeminiApiKey();
+      if (apiKey) {
+        try {
+          const fallback = await generateGeminiFallback(
+            `次の横断検索結果を重複なく重要度順の短い箇条書きに整理してください。未確認の事実は追加しないでください。\n\n${rows}`,
+            [],
+            apiKey,
+          );
+          setAiSummary(fallback);
+          return;
+        } catch {
+          // Show the connection guidance below when direct Gemini is unavailable.
+        }
+      }
+      setAiSummary('AI整理にはGemini APIキーまたは公開APIサーバーの設定が必要です。');
     } finally {
       setIsAiWorking(false);
     }

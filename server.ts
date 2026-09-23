@@ -16,24 +16,32 @@ const requestWindows = new Map<string, { startedAt: number; count: number }>();
 const RATE_WINDOW_MS = 60_000;
 const RATE_LIMIT_PER_IP = 60;
 
+const configuredOrigins = [
+  process.env.APP_URL || '',
+  ...(process.env.CORS_ORIGINS || '').split(','),
+];
 const allowedOrigins = new Set(
-  (process.env.CORS_ORIGINS || '')
-    .split(',')
+  configuredOrigins
     .map((origin) => origin.trim())
     .filter(Boolean),
 );
+const allowAnyOrigin = allowedOrigins.size === 0 || allowedOrigins.has('*');
 
 app.use(express.json({ limit: '15mb' }));
 
 app.use((req, res, next) => {
   const requestOrigin = req.headers.origin;
   const isDownloadedHtml = requestOrigin === 'null';
-  if (typeof requestOrigin === 'string' && (isDownloadedHtml || allowedOrigins.has(requestOrigin) || allowedOrigins.has('*'))) {
-    res.setHeader('Access-Control-Allow-Origin', requestOrigin);
+  const isSameHostOrigin = typeof requestOrigin === 'string' && requestOrigin === `${req.protocol}://${req.get('host')}`;
+  const canUseOrigin = isDownloadedHtml || isSameHostOrigin || allowAnyOrigin || allowedOrigins.has(requestOrigin || '');
+
+  if (typeof requestOrigin === 'string' && canUseOrigin) {
+    res.setHeader('Access-Control-Allow-Origin', allowAnyOrigin ? '*' : requestOrigin);
     res.setHeader('Vary', 'Origin');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-Gemini-API-Key');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-Gemini-API-Key, X-Requested-With');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   }
+
   if (req.method === 'OPTIONS') {
     res.sendStatus(204);
     return;

@@ -20,7 +20,8 @@
     <div id="root"></div>
     <script>
       // Optional override for downloaded HTML or an Apple home-screen app.
-      window.__MYENGINE_API_BASE_URL__ = window.__MYENGINE_API_BASE_URL__ || '';
+      const apiFromQuery = new URLSearchParams(window.location.search).get('api');
+      window.__MYENGINE_API_BASE_URL__ = window.__MYENGINE_API_BASE_URL__ || apiFromQuery || '';
     </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
