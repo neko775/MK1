@@ -16,7 +16,30 @@ const requestWindows = new Map<string, { startedAt: number; count: number }>();
 const RATE_WINDOW_MS = 60_000;
 const RATE_LIMIT_PER_IP = 60;
 
+const allowedOrigins = new Set(
+  (process.env.CORS_ORIGINS || '')
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean),
+);
+
 app.use(express.json({ limit: '15mb' }));
+
+app.use((req, res, next) => {
+  const requestOrigin = req.headers.origin;
+  const isDownloadedHtml = requestOrigin === 'null';
+  if (typeof requestOrigin === 'string' && (isDownloadedHtml || allowedOrigins.has(requestOrigin) || allowedOrigins.has('*'))) {
+    res.setHeader('Access-Control-Allow-Origin', requestOrigin);
+    res.setHeader('Vary', 'Origin');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-Gemini-API-Key');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  }
+  if (req.method === 'OPTIONS') {
+    res.sendStatus(204);
+    return;
+  }
+  next();
+});
 
 app.use('/api/', (req, res, next) => {
   const now = Date.now();

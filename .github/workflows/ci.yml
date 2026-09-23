@@ -1,6 +1,12 @@
 name: MK1 Engine CI
 
 on:
+  workflow_dispatch:
+    inputs:
+      api_base_url:
+        description: '公開済みExpress APIのHTTPS URL（例: https://api.example.com）'
+        required: false
+        type: string
   push:
     branches: [main, master]
   pull_request:
@@ -29,6 +35,8 @@ jobs:
         run: npm run lint
 
       - name: Build web app
+        env:
+          VITE_API_BASE_URL: ${{ inputs.api_base_url || vars.VITE_API_BASE_URL || '' }}
         run: npm run build
 
       - name: Upload web build
@@ -36,5 +44,16 @@ jobs:
         with:
           name: mk1-engine-web
           path: dist
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Package web build
+        run: tar -czf mk1-engine-web.tar.gz -C dist .
+
+      - name: Upload packaged web build
+        uses: actions/upload-artifact@v4
+        with:
+          name: mk1-engine-web-package
+          path: mk1-engine-web.tar.gz
           if-no-files-found: error
           retention-days: 14

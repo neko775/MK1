@@ -30,7 +30,7 @@ import {
 import { GeminiModel } from '../types';
 import { AudioWaveformVisualizer } from './AudioWaveformVisualizer';
 import { useVoiceRecognition } from '../hooks/useVoiceRecognition';
-import { apiUrl } from '../lib/api';
+import { apiUrl, generateGeminiFallback } from '../lib/api';
 import { deviceRpa } from '../lib/deviceRpa';
 
 export interface Message {
@@ -561,6 +561,14 @@ export const GeminiDrawer: React.FC<GeminiDrawerProps> = ({
     setAttachedFiles([]);
     setIsTyping(true);
 
+    const chatHistory = messages.slice(-6).map((m) => ({
+      sender: m.sender,
+      text: m.text,
+    }));
+    const prompt = isRpaMode
+      ? `${text.trim()}\n\nRPA実行モードです。MyEngineの画面を操作してユーザーの依頼をリアルタイムに実行してください。検索が必要な場合は、回答内に必ず [SEARCH: 検索語] を1行で含めてください。Android画面操作が必要な場合は、許可された操作だけを [RPA: {"action":"tap|type|scroll-forward|scroll-backward","text":"任意","viewId":"任意"}] の1行JSONで含めてください。実行状況を短い手順ログとして回答してください。`
+      : text.trim();
+
     if (isRpaMode) {
       setRpaActivity(['RPAエージェントを起動中', 'Gemini RPAモデルに接続中', '画面操作の手順を組み立て中']);
       if (rpaActivityTimerRef.current) window.clearInterval(rpaActivityTimerRef.current);
@@ -572,15 +580,6 @@ export const GeminiDrawer: React.FC<GeminiDrawerProps> = ({
     }
 
     try {
-      const chatHistory = messages.slice(-6).map((m) => ({
-        sender: m.sender,
-        text: m.text,
-      }));
-
-      const prompt = isRpaMode
-        ? `${text.trim()}\n\nRPA実行モードです。MyEngineの画面を操作してユーザーの依頼をリアルタイムに実行してください。検索が必要な場合は、回答内に必ず [SEARCH: 検索語] を1行で含めてください。Android画面操作が必要な場合は、許可された操作だけを [RPA: {"action":"tap|type|scroll-forward|scroll-backward","text":"任意","viewId":"任意"}] の1行JSONで含めてください。実行状況を短い手順ログとして回答してください。`
-        : text.trim();
-
       const res = await fetch(apiUrl('/api/gemini/chat'), {
         method: 'POST',
         headers: {
@@ -648,6 +647,25 @@ export const GeminiDrawer: React.FC<GeminiDrawerProps> = ({
         }
       } else {
         const errData = await res.json().catch(() => null);
+        if (apiKey) {
+          try {
+            const fallbackReply = await generateGeminiFallback(prompt, chatHistory, apiKey);
+            const fallbackMsg: Message = {
+              id: `msg-${Date.now()}-reply`,
+              sender: 'gemini',
+              text: fallbackReply,
+              timestamp: new Date().toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' }),
+              isLiveApi: true,
+            };
+            const fallbackMessages = [...nextMessages, fallbackMsg];
+            setMessages(fallbackMessages);
+            updateSessionMessages(fallbackMessages);
+            setIsTyping(false);
+            return;
+          } catch {
+            // Fall through to the server error shown below.
+          }
+        }
         const errMsg = errData?.error || `APIエラー (${res.status})`;
         const geminiMsg: Message = {
           id: `msg-${Date.now()}-reply`,
@@ -666,6 +684,25 @@ export const GeminiDrawer: React.FC<GeminiDrawerProps> = ({
         }
       }
     } catch (err: any) {
+      if (apiKey) {
+        try {
+          const fallbackReply = await generateGeminiFallback(prompt, chatHistory, apiKey);
+          const fallbackMsg: Message = {
+            id: `msg-${Date.now()}-reply`,
+            sender: 'gemini',
+            text: fallbackReply,
+            timestamp: new Date().toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' }),
+            isLiveApi: true,
+          };
+          const fallbackMessages = [...nextMessages, fallbackMsg];
+          setMessages(fallbackMessages);
+          updateSessionMessages(fallbackMessages);
+          setIsTyping(false);
+          return;
+        } catch {
+          // Fall through to the connection error shown below.
+        }
+      }
       const geminiMsg: Message = {
         id: `msg-${Date.now()}-reply`,
         sender: 'gemini',

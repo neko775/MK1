@@ -34,7 +34,7 @@ import {
   Terminal,
   Filter,
 } from 'lucide-react';
-import { apiUrl } from '../lib/api';
+import { apiUrl, generateGeminiSearchFallback } from '../lib/api';
 import { GeminiModel, SearchFilterState, SearchCategory } from '../types';
 
 interface SearchResultsProps {
@@ -152,8 +152,30 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
         setSearchQueries(data.searchQueries || [cleanQ]);
         setSearchEngines(data.searchEngines || []);
       })
-      .catch((error: Error) => {
-        if (error.name !== 'AbortError') setSearchError(error.message);
+      .catch(async (error: Error) => {
+        if (error.name !== 'AbortError') {
+          const encodedQuery = encodeURIComponent(cleanQ);
+          const fallbackEngines: SearchEngineLink[] = [
+            { name: 'Google', url: `https://www.google.com/search?q=${encodedQuery}` },
+            { name: 'Bing', url: `https://www.bing.com/search?q=${encodedQuery}` },
+            { name: 'DuckDuckGo', url: `https://duckduckgo.com/?q=${encodedQuery}` },
+            { name: 'Yahoo! JAPAN', url: `https://search.yahoo.co.jp/search?p=${encodedQuery}` },
+          ];
+          try {
+            const directAnswer = await generateGeminiSearchFallback(cleanQ);
+            setLiveItems([]);
+            setAiAnswer(directAnswer.answer);
+            setSearchQueries(directAnswer.searchQueries);
+            setSearchEngines(directAnswer.searchEngines);
+            setSearchError('APIサーバーに接続できないため、保存済みGeminiキーで回答しました。');
+          } catch {
+            setLiveItems([]);
+            setAiAnswer('AI検索サーバーに接続できないため、下の検索エンジンから直接検索できます。');
+            setSearchQueries([cleanQ]);
+            setSearchEngines(fallbackEngines);
+            setSearchError('AI検索サーバーに接続できませんでした。直接検索を表示しています。');
+          }
+        }
       })
       .finally(() => setIsLoading(false));
 

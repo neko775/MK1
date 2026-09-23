@@ -6,6 +6,8 @@
     <meta name="theme-color" content="#ffffff" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="format-detection" content="telephone=no" />
     <link rel="manifest" href="./manifest.webmanifest" />
     <title>MK1 検索エンジン</title>
     <meta name="description" content="Gemini公式Web画面風の超ミニマルな完全ロゴレス検索コックピット。7色単色遷移発光、マルチモーダル検索、ヘビーユーザー向けフィルター、横断比較、各種自動化ツールを搭載。" />
@@ -16,6 +18,10 @@
   </head>
   <body>
     <div id="root"></div>
+    <script>
+      // Optional override for downloaded HTML or an Apple home-screen app.
+      window.__MYENGINE_API_BASE_URL__ = window.__MYENGINE_API_BASE_URL__ || '';
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

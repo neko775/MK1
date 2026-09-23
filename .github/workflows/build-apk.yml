@@ -68,3 +68,22 @@ jobs:
           path: android/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
           retention-days: 14
+
+      - name: Upload web build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mk1-engine-web
+          path: dist
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Package web build
+        run: tar -czf mk1-engine-web.tar.gz -C dist .
+
+      - name: Upload packaged web build
+        uses: actions/upload-artifact@v4
+        with:
+          name: mk1-engine-web-package
+          path: mk1-engine-web.tar.gz
+          if-no-files-found: error
+          retention-days: 14

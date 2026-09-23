@@ -1,3 +1,12 @@
+declare global {
+  interface Window {
+    __MYENGINE_API_BASE_URL__?: string;
+    Capacitor?: {
+      isNativePlatform?: () => boolean;
+    };
+  }
+}
+
 export type GeminiModel = 
   | 'Gemini 3.8'
   | 'Gemini 3.1 Pro'
