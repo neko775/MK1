@@ -1,0 +1,9 @@
+{
+  "name": "MK1 検索エンジン",
+  "short_name": "MK1",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "description": "AI conversation and task-driven search studio"
+}

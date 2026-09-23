@@ -1,0 +1,6 @@
+{
+  "name": "MK1 検索エンジン",
+  "description": "Gemini公式Web画面風の超ミニマルな完全ロゴレス検索コックピット。7色単色遷移発光、マルチモーダル検索、ヘビーユーザー向けフィルター、横断比較、各種自動化ツールを搭載。",
+  "requestFramePermissions": ["microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

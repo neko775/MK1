@@ -1,0 +1,12 @@
+{
+    "chat.tools.terminal.autoApprove": {
+        "/^command -v node \\|\\| true; command -v npm \\|\\| true; command -v bun \\|\\| true; command -v pnpm \\|\\| true$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "/^for candidate in /opt/android-studio/jbr /opt/android-studio/jre /usr/lib/jvm/\\*; do if \\[\\[ -x \"\\$candidate/bin/java\" \\]\\]; then echo \"\\$candidate\"; \"\\$candidate/bin/java\" -version; fi; done$/": {
+            "approve": true,
+            "matchCommandLine": true
+        }
+    }
+}

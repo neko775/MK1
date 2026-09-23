@@ -1,0 +1,8 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="accessibility_service_description">MyEngine RPAが許可された画面操作を実行するために使用します。</string>
+    <string name="app_name">MyEngine</string>
+    <string name="title_activity_main">MyEngine</string>
+    <string name="package_name">com.myengine.search</string>
+    <string name="custom_url_scheme">com.myengine.search</string>
+</resources>

@@ -1,0 +1,8 @@
+{
+  "appId": "com.myengine.search",
+  "appName": "MK1 検索エンジン",
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "https"
+  }
+}

@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MK1 検索エンジン 起動</title>
+    <style>
+      :root { color-scheme: light; font-family: system-ui, -apple-system, sans-serif; }
+      body { min-height: 100vh; margin: 0; display: grid; place-items: center; background: #f6f8fb; color: #172033; }
+      main { width: min(92vw, 420px); padding: 32px; background: white; border: 1px solid #dce3ee; border-radius: 20px; box-shadow: 0 16px 50px rgb(25 45 80 / 12%); }
+      h1 { margin: 0 0 8px; font-size: 24px; }
+      p { color: #5a6577; line-height: 1.6; }
+      button, a { display: block; width: 100%; box-sizing: border-box; padding: 13px 16px; border: 0; border-radius: 12px; font: inherit; font-weight: 700; text-align: center; text-decoration: none; cursor: pointer; }
+      button { color: white; background: #2563eb; }
+      a { margin-top: 10px; color: #1d4ed8; background: #eff6ff; }
+      #status { min-height: 24px; margin: 16px 0 0; font-size: 13px; }
+      .ok { color: #047857; } .warn { color: #b45309; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>MK1 検索エンジンを起動</h1>
+      <p>サーバーを起動したあと、MK1 検索エンジンを開いてください。</p>
+      <button id="open" type="button">MK1 検索エンジンを開く</button>
+      <a href="http://localhost:3000/">localhost:3000を開く</a>
+      <p id="status" role="status"></p>
+    </main>
+    <script>
+      const status = document.querySelector('#status');
+      document.querySelector('#open').addEventListener('click', async () => {
+        status.textContent = 'サーバーを確認しています...';
+        try {
+          const response = await fetch('http://localhost:3000/', { mode: 'no-cors' });
+          status.textContent = 'MK1 検索エンジンを開きます。';
+          status.className = 'ok';
+        } catch {
+          status.textContent = 'サーバーが起動していません。start-server.shを実行してください。';
+          status.className = 'warn';
+        }
+        window.open('http://localhost:3000/', '_blank', 'noopener');
+      });
+    </script>
+  </body>
+</html>
